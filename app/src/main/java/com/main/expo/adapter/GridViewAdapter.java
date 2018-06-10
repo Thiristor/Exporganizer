@@ -23,37 +23,37 @@ public class GridViewAdapter extends ArrayAdapter<Categoria> {
         super(context, resource, objects);
     }
 
-//    //@NonNull
-//    @Override
-//    public View getView(int position, View convertView, ViewGroup parent) {
-//        View v = convertView;
-//
-//        if(v == null){
-//            LayoutInflater inflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//            v = inflater.inflate(R.layout.grid_item, null);
-//        }
-//        Categoria categoria = getItem(position);
-//        ImageView img = (ImageView) v.findViewById(R.id.imageView);
-//        TextView txtTitle =  (TextView) v.findViewById(R.id.txtTitle);
-//
-////        img.setImageResource(categoria.getImageId());
-//        txtTitle.setText(categoria.getName());
-//
-//        return v;
-//    }
-//
-//    @Override
-//    public int getViewTypeCount() {
-//        if(getCount() < 1){
-//            return 1;
-//        }else{
-//            return getCount();
-//        }
-//    }
-//
-//    @Override
-//    public int getItemViewType(int position) {
-//
-//        return position;
-//    }
+    //@NonNull
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View v = convertView;
+
+        if(v == null){
+            LayoutInflater inflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            v = inflater.inflate(R.layout.grid_item, null);
+        }
+        Categoria categoria = getItem(position);
+        ImageView img = (ImageView) v.findViewById(R.id.imageView);
+        TextView txtTitle =  (TextView) v.findViewById(R.id.txtTitle);
+
+//        img.setImageResource(categoria.getImageId());
+        txtTitle.setText(categoria.getName());
+
+        return v;
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        if(getCount() < 1){
+            return 1;
+        }else{
+            return getCount();
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+
+        return position;
+    }
 }
