@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".TestActivuty"
+    android:orientation="vertical"
+    android:id="@+id/root_layout"
+    android:background="@android:color/background_light"
+    android:fitsSystemWindows="true">
+
+    <!--<compatible-screens xmlns:android="http://schemas.android.com/apk/res/android">
+        <screen android:screenSize=["small" | "normal" | "large" | "xlarge"]
+        android:screenDensity=["ldpi" | "mdpi" | "hdpi" | "xhdpi"] />
+    </compatible-screens>-->
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="CATEGORÍAS"
+        android:textAlignment="center"
+        android:textSize="30dp" />
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_marginTop="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".TestActivuty"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/testrecyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none">
+
+        </android.support.v7.widget.RecyclerView>
+
+
+
+    </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="25dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginRight="25dp"
+
+        app:backgroundTint="#ADDCCA"
+        android:clickable="true"
+        android:contentDescription="Añadir categoría"
+        android:elevation="6dp"
+        android:onClick="NewCategory"
+        android:src="@drawable/floating_new"
+        android:transitionName="transition"/>
+
+</RelativeLayout>

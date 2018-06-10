@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:padding="16dp"
+tools:context=".EventsActivity"
+android:orientation="vertical"
+android:id="@+id/root_layout"
+android:background="@android:color/background_light"
+android:fitsSystemWindows="true">
+
+<TextView
+    android:id="@+id/nombreEvento"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:text="MIS EVENTOS"
+    android:textAlignment="center"
+    android:textSize="30dp"
+    android:transitionName="animacion2"/>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="50dp"
+    tools:context=".EventsActivity"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/eventsrecyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+
+    </android.support.v7.widget.RecyclerView>
+
+</RelativeLayout>
+
+    <!--<fragment android:name="com.main.expo.exporganizer.fragments.EventFragment"-->
+        <!--android:id="@+id/my_fragment"-->
+        <!--android:layout_weight="1"-->
+        <!--android:layout_marginTop="300dp"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" />-->
+
+    <!--<fragment class="com.main.expo.exporganizer.fragments.EventFragment"-->
+        <!--android:id="@+id/my_fragment"-->
+        <!--android:layout_width="match_parent" android:layout_height="match_parent" />-->
+
+    <RelativeLayout
+        android:id="@+id/my_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"/>
+
+<android.support.design.widget.FloatingActionButton
+    android:id="@+id/floatingEvent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_alignParentRight="true"
+    android:layout_marginBottom="25dp"
+    android:layout_marginEnd="25dp"
+    android:layout_marginRight="25dp"
+    android:clickable="true"
+    android:contentDescription="Añadir categoría"
+    android:elevation="6dp"
+    app:srcCompat="@drawable/floating_new"
+    android:onClick="NewEvent"/>
+
+</RelativeLayout>

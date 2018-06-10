@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Exporganizer</string>
+    <string name="title_activity_events_menu">EventsMenu</string>
+</resources>
