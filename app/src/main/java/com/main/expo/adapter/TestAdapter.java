@@ -21,7 +21,6 @@ import java.util.List;
 
 public class TestAdapter extends RecyclerView.Adapter<TestAdapter.ViewHolder>{
 
-    //HOLA
 
     private List<Categoria> categorias;
     private int layout;
