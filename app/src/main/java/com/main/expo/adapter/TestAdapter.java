@@ -21,6 +21,7 @@ import java.util.List;
 
 public class TestAdapter extends RecyclerView.Adapter<TestAdapter.ViewHolder>{
 
+
     private List<Categoria> categorias;
     private int layout;
     private OnItemClickListener itemClickListener;
