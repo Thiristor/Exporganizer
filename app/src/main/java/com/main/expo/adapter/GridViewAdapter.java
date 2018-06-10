@@ -23,7 +23,7 @@ public class GridViewAdapter extends ArrayAdapter<Categoria> {
         super(context, resource, objects);
     }
 
-    //@NonNull
+    @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
