@@ -49,7 +49,7 @@ public class NewCategory extends Activity {
 
     private Bitmap bmp;
     ImageView imageCategory;
-    byte[] newImage = null;
+    String newImage = null;
     Uri tempUri;
     final int CAMERA_CAPTURE = 1;
     final int CAMERA_CROP = 2;
@@ -61,6 +61,8 @@ public class NewCategory extends Activity {
     private float revealX;
     private float revealY;
     private boolean animEnd = false;
+
+    private String mCurrentPhotoPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -280,8 +282,6 @@ public class NewCategory extends Activity {
         }
     }
 
-    String mCurrentPhotoPath;
-
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -312,11 +312,10 @@ public class NewCategory extends Activity {
             }else if(requestCode == CAMERA_CROP){
                 Picasso.get().load(tempUri).into(imageCategory);
 
-                try {
-                    newImage = ImageUtils.getImageByteFromUri(this, tempUri);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
+                newImage = tempUri.getPath();
+                //newImage = ImageUtils.getImageByteFromUri(this, tempUri);
+
             }
         }
     }
@@ -332,9 +331,9 @@ public class NewCategory extends Activity {
             //indicate aspect of desired crop
             cropIntent.putExtra("aspectX", 1.5);
             cropIntent.putExtra("aspectY", 1);
-            //indicate output X and Y
-            cropIntent.putExtra("outputX", 256);
-            cropIntent.putExtra("outputY", 256);
+            //indicate output X and Y - 256
+            cropIntent.putExtra("outputX", 1024);
+            cropIntent.putExtra("outputY", 1024);
             //retrieve data on return
             cropIntent.putExtra("return-data", true);
             cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempUri);
@@ -366,8 +365,8 @@ public class NewCategory extends Activity {
             values.put(Categoria.COLUMN_NAME_TITLE, txtName.getText().toString());
             values.put(Categoria.COLUMN_NAME_DESCRIPTION, txtDescription.getText().toString());
 
-            values.put(Categoria.COLUMN_NAME_IMAGE, newImage);
-
+            //values.put(Categoria.COLUMN_NAME_IMAGE, newImage);
+            values.put(Categoria.COLUMN_NAME_IMAGE, mCurrentPhotoPath);
 
             long newRowId = db.insert(Categoria.TABLE_NAME, null, values);
             System.out.println("newRowId: " +  newRowId);

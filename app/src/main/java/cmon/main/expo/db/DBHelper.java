@@ -19,7 +19,7 @@ public class DBHelper extends SQLiteOpenHelper {
             + " (" + Categoria._ID + " INTEGER PRIMARY KEY,"
             + Categoria.COLUMN_NAME_TITLE + " TEXT,"
             + Categoria.COLUMN_NAME_DESCRIPTION + " TEXT,"
-            + Categoria.COLUMN_NAME_IMAGE + " INTEGER)";
+            + Categoria.COLUMN_NAME_IMAGE + " TEXT)";
 
     private String sqlCreate2 = "CREATE TABLE " + Item.TABLE_NAME
             + " (" + Item._ID + " INTEGER PRIMARY KEY,"

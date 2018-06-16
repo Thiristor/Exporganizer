@@ -17,6 +17,7 @@ import com.main.expo.exporganizer.R;
 import com.main.expo.utils.ImageUtils;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.List;
 
 public class TestAdapter extends RecyclerView.Adapter<TestAdapter.ViewHolder>{
@@ -44,12 +45,14 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.ViewHolder>{
 
             textViewName.setText(categoria.getName());
 
-            Bitmap imageUri = ImageUtils.getImageUriFromByte(null, categoria.getImageId());
+            //Bitmap imageUri = ImageUtils.getImageUriFromByte(null, categoria.getImageId());
 
 //            Picasso.get().load(imageUri).fit().into(imageViewName);
 
 
-            imageViewName.setImageBitmap(imageUri);
+            //imageViewName.setImageBitmap(imageUri);
+            //imageViewName.setImageURI(Uri.fromFile(new File(categoria.getImagePath())));
+            imageViewName.setImageDrawable(categoria.getImage(imageViewName.getContext()));
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

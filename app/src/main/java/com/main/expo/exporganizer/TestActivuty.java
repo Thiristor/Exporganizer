@@ -177,7 +177,8 @@ public class TestActivuty extends AppCompatActivity {
 
                     categoryList.add(
                             new Categoria(cursor.getInt(cursor.getColumnIndexOrThrow(Categoria._ID)),
-                                    cursor.getBlob(cursor.getColumnIndexOrThrow(Categoria.COLUMN_NAME_IMAGE)),
+                                    //cursor.getBlob(cursor.getColumnIndexOrThrow(Categoria.COLUMN_NAME_IMAGE)),
+                                    cursor.getString(cursor.getColumnIndexOrThrow(Categoria.COLUMN_NAME_IMAGE)),
                                     cursor.getString(cursor.getColumnIndexOrThrow(Categoria.COLUMN_NAME_TITLE)),
                                     cursor.getString(cursor.getColumnIndexOrThrow(Categoria.COLUMN_NAME_DESCRIPTION))));
                 }

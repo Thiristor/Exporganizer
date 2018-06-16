@@ -1,8 +1,15 @@
 package com.main.expo.beans;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.BaseColumns;
+
+import com.main.expo.exporganizer.R;
+import com.main.expo.utils.FileUtils;
 
 /**
  * Created by Sergio on 06/02/2018.
@@ -15,13 +22,15 @@ public class Categoria implements BaseColumns , Parcelable{
     public static final String COLUMN_NAME_DESCRIPTION = "Descripcion";
 
     private int id;
-    private byte[] imageId;
+    //private byte[] imageId;
+    private String imagePath;
     private String name;
     private String description;
 
-    public Categoria(int id, byte[] imageId, String name, String description) {
+    public Categoria(int id, String imagePath, String name, String description) {
         this.id = id;
-        this.imageId = imageId;
+        //this.imageId = imageId;
+        this.imagePath = imagePath;
         this.name = name;
         this.description = description;
 
@@ -35,12 +44,20 @@ public class Categoria implements BaseColumns , Parcelable{
         this.id = id;
     }
 
-    public byte[] getImageId() {
-        return imageId;
+//    public byte[] getImageId() {
+//        return imageId;
+//    }
+//
+//    public void setImageId(byte[] imageId) {
+//        this.imageId = imageId;
+//    }
+
+    public String getImagePath(){
+        return imagePath;
     }
 
-    public void setImageId(byte[] imageId) {
-        this.imageId = imageId;
+    public void setImagePath(String imagePath){
+        this.imagePath = imagePath;
     }
 
     public String getName() {
@@ -67,14 +84,16 @@ public class Categoria implements BaseColumns , Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int i) {
         dest.writeInt(id);
-        dest.writeByteArray(imageId);
+        //dest.writeByteArray(imageId);
+        dest.writeString(imagePath);
         dest.writeString(name);
         dest.writeString(description);
     }
 
     public Categoria(Parcel in) {
         id = in.readInt();
-        imageId = in.createByteArray();
+        //imageId = in.createByteArray();
+        imagePath = in.readString();
         name = in.readString();
         description = in.readString();
     }
@@ -89,4 +108,41 @@ public class Categoria implements BaseColumns , Parcelable{
             return new Categoria[size];
         }
     };
+
+    // Image methods
+
+    public boolean hasImage() {
+
+        return getImagePath() != null && !getImagePath().isEmpty();
+    }
+
+    public Drawable getThumbnail(Context context) {
+
+        return getScaledImage(context, 128, 128);
+    }
+
+    public Drawable getImage(Context context) {
+
+        return getScaledImage(context, 512, 512);
+    }
+
+    private Drawable getScaledImage(Context context, int reqWidth, int reqHeight) {
+
+        // If profile has a Image.
+        if (hasImage()) {
+
+            // Decode the input stream into a bitmap.
+            Bitmap bitmap = FileUtils.getResizedBitmap(getImagePath(), reqWidth, reqHeight);
+
+            // If was successfully created.
+            if (bitmap != null) {
+
+                // Return a drawable representation of the bitmap.
+                return new BitmapDrawable(context.getResources(), bitmap);
+            }
+        }
+
+        // Return the default image drawable.
+        return context.getResources().getDrawable(R.drawable.bell);
+    }
 }
