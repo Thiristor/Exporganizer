@@ -6,7 +6,6 @@ import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,7 +28,6 @@ import android.widget.Toast;
 
 import com.main.expo.utils.GUIUtils;
 import com.main.expo.beans.Categoria;
-import com.main.expo.utils.ImageUtils;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -47,9 +45,7 @@ public class NewCategory extends Activity {
 
     private DBHelper catdbh;
 
-    private Bitmap bmp;
     ImageView imageCategory;
-    String newImage = null;
     Uri tempUri;
     final int CAMERA_CAPTURE = 1;
     final int CAMERA_CROP = 2;
@@ -303,19 +299,9 @@ public class NewCategory extends Activity {
         if(resultCode == Activity.RESULT_OK){
 
             if(requestCode == CAMERA_CAPTURE){
-//                Bundle ext = data.getExtras();
-//                System.out.println("PRE");
-//                System.out.println("URI: " + data.getData());
-//                bmp = (Bitmap) ext.get("data");
-//                tempUri = ImageUtils.getImageUri(getApplicationContext(), bmp);
                 performCrop();
             }else if(requestCode == CAMERA_CROP){
                 Picasso.get().load(tempUri).into(imageCategory);
-
-
-                newImage = tempUri.getPath();
-                //newImage = ImageUtils.getImageByteFromUri(this, tempUri);
-
             }
         }
     }
@@ -332,8 +318,8 @@ public class NewCategory extends Activity {
             cropIntent.putExtra("aspectX", 1.5);
             cropIntent.putExtra("aspectY", 1);
             //indicate output X and Y - 256
-            cropIntent.putExtra("outputX", 1024);
-            cropIntent.putExtra("outputY", 1024);
+//            cropIntent.putExtra("outputX", 256);
+//            cropIntent.putExtra("outputY", 1024);
             //retrieve data on return
             cropIntent.putExtra("return-data", true);
             cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempUri);
@@ -365,7 +351,6 @@ public class NewCategory extends Activity {
             values.put(Categoria.COLUMN_NAME_TITLE, txtName.getText().toString());
             values.put(Categoria.COLUMN_NAME_DESCRIPTION, txtDescription.getText().toString());
 
-            //values.put(Categoria.COLUMN_NAME_IMAGE, newImage);
             values.put(Categoria.COLUMN_NAME_IMAGE, mCurrentPhotoPath);
 
             long newRowId = db.insert(Categoria.TABLE_NAME, null, values);
