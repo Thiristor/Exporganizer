@@ -109,7 +109,7 @@ public class Categoria implements BaseColumns , Parcelable{
         }
     };
 
-    // Image methods
+    // TODO Image methods
 
     public boolean hasImage() {
 

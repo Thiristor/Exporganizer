@@ -52,7 +52,9 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.ViewHolder>{
 
             //imageViewName.setImageBitmap(imageUri);
             //imageViewName.setImageURI(Uri.fromFile(new File(categoria.getImagePath())));
-            imageViewName.setImageDrawable(categoria.getImage(imageViewName.getContext()));
+            //imageViewName.setImageDrawable(categoria.getImage(imageViewName.getContext()));
+            File f = new File(categoria.getImagePath());
+            Picasso.get().load(f).fit().into(imageViewName);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

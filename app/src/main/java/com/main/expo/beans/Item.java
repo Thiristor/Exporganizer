@@ -1,8 +1,15 @@
 package com.main.expo.beans;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.BaseColumns;
+
+import com.main.expo.exporganizer.R;
+import com.main.expo.utils.FileUtils;
 
 /**
  * Created by Sergio on 07/02/2018.
@@ -20,7 +27,7 @@ public class Item implements BaseColumns, Parcelable {
     public static final String COLUMN_NAME_SERIES = "Serie";
     public static final String COLUMN_NAME_CATEGORY = "Categoria";
 
-    private int imageId;
+    private String imagePath;
     private String name;
     private String description;
     private int quantity;
@@ -29,8 +36,8 @@ public class Item implements BaseColumns, Parcelable {
     private String series;
     private String category;
 
-    public Item(int imageId, String name, String description, int quantity, int sold, float price, String series, String category) {
-        this.imageId = imageId;
+    public Item(String imagePath, String name, String description, int quantity, int sold, float price, String series, String category) {
+        this.imagePath = imagePath;
         this.name = name;
         this.description = description;
         this.quantity = quantity;
@@ -40,12 +47,12 @@ public class Item implements BaseColumns, Parcelable {
         this.category = category;
     }
 
-    public int getImageId() {
-        return imageId;
+    public String getImagePath() {
+        return imagePath;
     }
 
-    public void setImageId(int imageId) {
-        this.imageId = imageId;
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     public String getName() {
@@ -111,7 +118,7 @@ public class Item implements BaseColumns, Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int i) {
-        dest.writeInt(imageId);
+        dest.writeString(imagePath);
         dest.writeString(name);
         dest.writeString(description);
         dest.writeInt(quantity);
@@ -121,7 +128,7 @@ public class Item implements BaseColumns, Parcelable {
         dest.writeString(category);
     }
     public Item(Parcel in) {
-        this.imageId = in.readInt();
+        this.imagePath = in.readString();
         this.name = in.readString();
         this.description = in.readString();
         this.quantity = in.readInt();
@@ -141,4 +148,41 @@ public class Item implements BaseColumns, Parcelable {
             return new Item[size];
         }
     };
+
+    // TODO Image methods
+
+    public boolean hasImage() {
+
+        return getImagePath() != null && !getImagePath().isEmpty();
+    }
+
+    public Drawable getThumbnail(Context context) {
+
+        return getScaledImage(context, 128, 128);
+    }
+
+    public Drawable getImage(Context context) {
+
+        return getScaledImage(context, 512, 512);
+    }
+
+    private Drawable getScaledImage(Context context, int reqWidth, int reqHeight) {
+
+        // If profile has a Image.
+        if (hasImage()) {
+
+            // Decode the input stream into a bitmap.
+            Bitmap bitmap = FileUtils.getResizedBitmap(getImagePath(), reqWidth, reqHeight);
+
+            // If was successfully created.
+            if (bitmap != null) {
+
+                // Return a drawable representation of the bitmap.
+                return new BitmapDrawable(context.getResources(), bitmap);
+            }
+        }
+
+        // Return the default image drawable.
+        return context.getResources().getDrawable(R.drawable.bell);
+    }
 }

@@ -7,19 +7,25 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.main.expo.adapter.GridViewAdapter;
 import com.main.expo.adapter.GridViewItemAdapter;
+import com.main.expo.adapter.ItemsAdapter;
 import com.main.expo.adapter.ListViewAdapter;
 import com.main.expo.adapter.ListViewItemAdapter;
+import com.main.expo.adapter.TestAdapter;
 import com.main.expo.beans.Categoria;
 import com.main.expo.beans.Item;
 
@@ -47,6 +53,10 @@ public class CategoryContent extends AppCompatActivity {
 
     private Categoria categoria;
 
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayaoutManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,16 +67,16 @@ public class CategoryContent extends AppCompatActivity {
 
         categoria = (Categoria) getIntent().getParcelableExtra("categoria");
 
-        stubList = findViewById(R.id.stub_list2);
-        stubGrid = findViewById(R.id.stub_grid2);
+//        stubList = findViewById(R.id.stub_list2);
+//        stubGrid = findViewById(R.id.stub_grid2);
 
         //Inflate ViewStub before get view
 
-        stubList.inflate();
-        stubGrid.inflate();
-
-        listView = findViewById(R.id.mylistview);
-        gridView = findViewById(R.id.mygridview);
+//        stubList.inflate();
+//        stubGrid.inflate();
+//
+//        listView = findViewById(R.id.mylistview);
+//        gridView = findViewById(R.id.mygridview);
 
         //Get list of products
         LoadData();
@@ -76,11 +86,33 @@ public class CategoryContent extends AppCompatActivity {
         currentViewMode = sharedPreferences.getInt("currentViewMode", VIEW_MODE_LISTVIEW); //Default
 
         //Register item click
-        listView.setOnItemClickListener(onItemClickListener);
-        gridView.setOnItemClickListener(onItemClickListener);
+//        listView.setOnItemClickListener(onItemClickListener);
+//        gridView.setOnItemClickListener(onItemClickListener);
 
-        SwitchView();
+        //SwitchView();
+        LoadRecycler();
     }
+
+    public void LoadRecycler() {
+        mRecyclerView = findViewById(R.id.itemrecycler);
+        mLayaoutManager = new LinearLayoutManager(this);
+
+
+        mAdapter = new ItemsAdapter(itemList, R.layout.list_item, new ItemsAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Item item, int position, ImageView imageViewName) {
+                OpenItem(position);
+            }
+        });
+
+        mRecyclerView.setHasFixedSize(true);
+
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        mRecyclerView.setLayoutManager(mLayaoutManager);
+        mRecyclerView.setAdapter(mAdapter);
+    }
+
 
     /*@Override
     protected void onSaveInstanceState(Bundle state) {
@@ -101,12 +133,17 @@ public class CategoryContent extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        itemList = LoadData();
+        ((ItemsAdapter) mAdapter).SetList(itemList);
+        mAdapter.notifyDataSetChanged();
+
+        //TODO Cambiar donde se coloca la posicion tras introducir nueva categoria
+        //mLayaoutManager.scrollToPosition(0);
+
+        //LoadData();
+        //SwitchView();
+        //LoadRecycler();
         super.onResume();
-
-        System.out.println("ON RESUUUME 2");
-
-        LoadData();
-        SwitchView();
     }
 
     private void SwitchView() {
@@ -190,6 +227,12 @@ public class CategoryContent extends AppCompatActivity {
         }
     };
 
+    public void OpenItem(int position){
+        Intent intent = new Intent(CategoryContent.this, ItemContent.class);
+        intent.putExtra("item", itemList.get(position));
+        startActivity(intent);
+    }
+
     public void NewItem(View view){
         Intent intent = new Intent(CategoryContent.this, NewItem.class);
         intent.putExtra("categoryId", String.valueOf(categoria.getId()));
@@ -229,20 +272,26 @@ public class CategoryContent extends AppCompatActivity {
             );
 
             if (cursor != null) {
-                while(cursor.moveToNext()) {
+                try{
+                    while(cursor.moveToNext()) {
 
-                    itemList.add(
-                            new Item(cursor.getInt(cursor.getColumnIndexOrThrow(Categoria.COLUMN_NAME_IMAGE)),
-                                    cursor.getString(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_TITLE)),
-                                    cursor.getString(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_DESCRIPTION)),
-                                    cursor.getInt(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_QUANTITY)),
-                                    cursor.getInt(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_SOLD)),
-                                    cursor.getFloat(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_PRICE)),
-                                    cursor.getString(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_SERIES)),
-                                    cursor.getString(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_CATEGORY))));
+                        itemList.add(
+                                new Item(cursor.getString(cursor.getColumnIndexOrThrow(Categoria.COLUMN_NAME_IMAGE)),
+                                        cursor.getString(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_TITLE)),
+                                        cursor.getString(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_DESCRIPTION)),
+                                        cursor.getInt(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_QUANTITY)),
+                                        cursor.getInt(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_SOLD)),
+                                        cursor.getFloat(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_PRICE)),
+                                        cursor.getString(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_SERIES)),
+                                        cursor.getString(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_CATEGORY))));
+                    }
+                } finally {
+                    cursor.close();
                 }
             }
+            db.close();
         }
+
 
         return itemList;
     }

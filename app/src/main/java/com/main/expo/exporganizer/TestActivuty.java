@@ -182,7 +182,9 @@ public class TestActivuty extends AppCompatActivity {
                                     cursor.getString(cursor.getColumnIndexOrThrow(Categoria.COLUMN_NAME_TITLE)),
                                     cursor.getString(cursor.getColumnIndexOrThrow(Categoria.COLUMN_NAME_DESCRIPTION))));
                 }
+                cursor.close();
             }
+            db.close();
         }
         if (!categoryList.isEmpty() || categoryList != null) {
             return categoryList;

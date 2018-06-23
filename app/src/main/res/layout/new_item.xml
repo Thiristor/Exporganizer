@@ -8,23 +8,23 @@
     android:background="#DCEBC2">
 
     <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:id="@+id/imageItem"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="28dp"
-        android:src="@drawable/camera"
-        android:visibility="visible" />
+        android:src="@color/cardview_dark_background"
+        android:onClick="OpenCamera"/>
+
 
     <EditText
         android:id="@+id/txtName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/imageView2"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="19dp"
-        android:ems="10"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="207dp"
+        android:layout_marginStart="11dp"
+        android:layout_marginLeft="11dp"
+        android:ems="8"
         android:hint="Nombre"
         android:inputType="textPersonName" />
 
@@ -32,32 +32,22 @@
         android:id="@+id/txtDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/txtName"
         android:layout_alignStart="@+id/txtName"
         android:layout_below="@+id/txtName"
-        android:ems="10"
+        android:layout_marginTop="-207dp"
+        android:ems="8"
         android:hint="Descripción"
         android:inputType="textPersonName" />
-
-    <Button
-        android:id="@+id/createButton2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/txtSeries"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="12dp"
-        android:onClick="InsertItem"
-        android:text="Crear"
-        android:visibility="visible" />
 
     <EditText
         android:id="@+id/txtQuantity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/txtDescription"
-        android:layout_alignRight="@+id/txtDescription"
-        android:layout_below="@+id/txtDescription"
-        android:ems="10"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/txtName"
+        android:layout_marginEnd="11dp"
+        android:layout_marginRight="11dp"
+        android:ems="8"
         android:hint="Cantidad"
         android:inputType="textPersonName"
         android:text="10" />
@@ -66,11 +56,9 @@
         android:id="@+id/txtSeries"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/txtQuantity"
-        android:layout_alignStart="@+id/txtQuantity"
-        android:layout_below="@+id/txtQuantity"
-        android:layout_marginTop="50dp"
-        android:ems="10"
+        android:layout_alignStart="@+id/txtDescription"
+        android:layout_below="@+id/txtDescription"
+        android:ems="8"
         android:hint="Serie"
         android:inputType="textPersonName" />
 
@@ -78,11 +66,36 @@
         android:id="@+id/txtPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/txtQuantity"
-        android:layout_centerHorizontal="true"
-        android:ems="10"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/txtName"
+        android:layout_marginTop="-207dp"
+        android:layout_marginEnd="11dp"
+        android:layout_marginRight="11dp"
+        android:ems="8"
         android:hint="Precio"
         android:inputType="textPersonName"
         android:text="5" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:onClick="InsertItem">
+
+        <ImageView
+            android:id="@+id/createButton2"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:background="@color/colorPrimary"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:textSize="25dp"
+            android:text="CREAR" />
+
+    </RelativeLayout>
 
 </RelativeLayout>

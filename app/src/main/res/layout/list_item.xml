@@ -3,40 +3,53 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/listItem_relative"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="#ffffff"
-    android:orientation="vertical"
-    android:paddingBottom="5dp"
-    android:paddingLeft="10dp"
-    android:paddingTop="5dp">
+    android:orientation="vertical">
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="80dp"
+        android:layout_width="match_parent"
         android:layout_height="80dp"
-        app:srcCompat="@drawable/camera" />
+        android:layout_alignParentTop="true"/>
+
+    <ImageView
+        android:id="@+id/colorbar"
+        android:layout_width="10dp"
+        android:layout_height="80dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"/>
+
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="80dp"
+        android:layout_alignParentTop="true"
+        android:layout_toStartOf="@+id/colorbar"
+        android:background="@drawable/itembanner"
+        android:backgroundTintMode="add" />
 
     <TextView
         android:id="@+id/txtTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="15dp"
-        android:layout_toRightOf="@id/imageView"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="11dp"
         android:text="Title"
         android:textAppearance="?android:textAppearanceMedium"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="@color/cardview_light_background"/>
 
     <TextView
         android:id="@+id/txtTotal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/txtTitle"
-        android:layout_marginEnd="37dp"
-        android:layout_marginRight="37dp"
+        android:layout_below="@+id/txtTitle"
+        android:layout_marginEnd="30dp"
         android:textSize="24sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="@color/cardview_light_background"/>
 
 </RelativeLayout>

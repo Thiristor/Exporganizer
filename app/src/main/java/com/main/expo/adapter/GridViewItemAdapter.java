@@ -38,7 +38,7 @@ public class GridViewItemAdapter extends ArrayAdapter<Item> {
         ImageView img = (ImageView) v.findViewById(R.id.imageView);
         TextView txtTitle =  (TextView) v.findViewById(R.id.txtTitle);
 
-        img.setImageResource(item.getImageId());
+//        img.setImageResource(item.getImageId());
         txtTitle.setText(item.getName());
 
         return v;

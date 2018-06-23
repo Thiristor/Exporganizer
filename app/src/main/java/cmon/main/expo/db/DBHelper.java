@@ -25,7 +25,7 @@ public class DBHelper extends SQLiteOpenHelper {
             + " (" + Item._ID + " INTEGER PRIMARY KEY,"
             + Item.COLUMN_NAME_TITLE + " TEXT,"
             + Item.COLUMN_NAME_DESCRIPTION + " TEXT,"
-            + Item.COLUMN_NAME_IMAGE + " INTEGER,"
+            + Item.COLUMN_NAME_IMAGE + " TEXT,"
             + Item.COLUMN_NAME_QUANTITY + " INTEGER,"
             + Item.COLUMN_NAME_SOLD + " INTEGER,"
             + Item.COLUMN_NAME_PRICE + " FLOAT,"
@@ -50,6 +50,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(sqlCreate);
         db.execSQL(sqlCreate2);
         db.execSQL(sqlCreateEvent);
+        db.close();
     }
 
     @Override

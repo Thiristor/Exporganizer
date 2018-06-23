@@ -14,7 +14,9 @@ import android.widget.TextView;
 import com.main.expo.beans.Categoria;
 import com.main.expo.beans.Item;
 import com.main.expo.exporganizer.R;
+import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -45,8 +47,10 @@ public class ListViewItemAdapter extends ArrayAdapter<Item>{
         TextView txtTotal =  (TextView) v.findViewById(R.id.txtTotal);
         relativeLayout = (RelativeLayout) v.findViewById(R.id.listItem_relative);
 
+        //img.setImageDrawable(item.getImage(img.getContext()));
+        File f = new File(item.getImagePath());
+        Picasso.get().load(f).into(img);
 
-        img.setImageResource(item.getImageId());
         txtTitle.setText(item.getName());
         if(item.getSold() > 0){
             txtTotal.setText(String.valueOf(item.getSold()*item.getPrice()) + "€");
