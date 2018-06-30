@@ -50,7 +50,6 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(sqlCreate);
         db.execSQL(sqlCreate2);
         db.execSQL(sqlCreateEvent);
-        db.close();
     }
 
     @Override

@@ -68,11 +68,15 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder>{
                     imageColorBar.setBackgroundColor(Color.parseColor("#77DD77")); //Naranja FFB347
                 } else if (rest > (item.getQuantity() / 2) / 2) {
                     imageColorBar.setBackgroundColor(Color.parseColor("#FFB347")); //Rojo FF6961
+                }else if(rest == 0){
+                    imageColorBar.setBackgroundColor(Color.parseColor("#0A0A0A")); //NEGRO 0A0A0A
                 }else{
                     imageColorBar.setBackgroundColor(Color.parseColor("#FF6961")); //Verde 77DD77
                 }
             }else{
-                imageColorBar.getLayoutParams().width = 0;
+                //TODO FALLA AL CAMBIAR EL ANCHO
+                //imageColorBar.getLayoutParams().width = 0;
+                imageColorBar.setBackgroundColor(Color.parseColor("#3B83BD")); //Verde 77DD77
             }
         }
     }
@@ -110,5 +114,20 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder>{
 
     public interface OnItemClickListener{
         void onItemClick(Item item, int position, ImageView imageViewName);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+    public void clear() {
+        final int size = item.size();
+        if (size > 0) {
+            for (int i = 0; i < size; i++) {
+                item.remove(0);
+            }
+            notifyItemRangeRemoved(0, size);
+        }
     }
 }

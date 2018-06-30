@@ -10,77 +10,177 @@
     <ImageView
         android:id="@+id/imageItem"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="204dp"
         android:layout_alignParentTop="true"
-        android:src="@color/cardview_dark_background"
-        android:onClick="OpenCamera"/>
+        android:onClick="OpenCamera"
+
+        android:src="@color/cardview_dark_background" />
 
 
-    <EditText
+    <android.support.design.widget.TextInputLayout
         android:id="@+id/txtName"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlineBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="207dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/imageItem"
         android:layout_marginStart="11dp"
-        android:layout_marginLeft="11dp"
-        android:ems="8"
-        android:hint="Nombre"
-        android:inputType="textPersonName" />
+        android:layout_marginTop="11dp"
+        app:errorEnabled="true">
 
-    <EditText
+        <EditText
+            android:id="@+id/txtName2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:ems="8"
+            android:hint="Nombre"
+            android:inputType="textPersonName" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
         android:id="@+id/txtDescription"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlineBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtName"
+        app:errorEnabled="true"
+        android:layout_marginStart="11dp">
+
+        <EditText
+            android:id="@+id/txtDescription2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:ems="8"
+            android:hint="Descripción"
+            android:inputType="textPersonName" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/txtSeries"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlineBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/txtName"
-        android:layout_below="@+id/txtName"
-        android:layout_marginTop="-207dp"
-        android:ems="8"
-        android:hint="Descripción"
-        android:inputType="textPersonName" />
+        android:layout_below="@+id/txtDescription"
+        app:errorEnabled="true">
 
-    <EditText
+        <EditText
+            android:id="@+id/txtSeries2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:ems="8"
+            android:hint="Serie"
+            android:inputType="textPersonName" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
         android:id="@+id/txtQuantity"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlineBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignTop="@+id/txtName"
         android:layout_marginEnd="11dp"
-        android:layout_marginRight="11dp"
-        android:ems="8"
-        android:hint="Cantidad"
-        android:inputType="textPersonName"
-        android:text="10" />
+        app:errorEnabled="true">
 
-    <EditText
-        android:id="@+id/txtSeries"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/txtDescription"
-        android:layout_below="@+id/txtDescription"
-        android:ems="8"
-        android:hint="Serie"
-        android:inputType="textPersonName" />
+        <EditText
+            android:id="@+id/txtQuantity2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:ems="8"
+            android:hint="Cantidad"
+            android:inputType="textPersonName"
+            android:text="10"/>
+    </android.support.design.widget.TextInputLayout>
 
-    <EditText
+    <android.support.design.widget.TextInputLayout
         android:id="@+id/txtPrice"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlineBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
+        android:layout_alignStart="@+id/txtQuantity"
         android:layout_below="@+id/txtName"
-        android:layout_marginTop="-207dp"
-        android:layout_marginEnd="11dp"
-        android:layout_marginRight="11dp"
-        android:ems="8"
-        android:hint="Precio"
-        android:inputType="textPersonName"
-        android:text="5" />
+        app:errorEnabled="true">
+
+        <EditText
+            android:id="@+id/txtPrice2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:ems="8"
+            android:hint="Precio"
+            android:inputType="textPersonName"
+            android:text="5"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <!--<EditText-->
+        <!--android:id="@+id/txtName"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_marginBottom="207dp"-->
+        <!--android:layout_marginStart="11dp"-->
+        <!--android:layout_marginLeft="11dp"-->
+        <!--android:ems="8"-->
+        <!--android:hint="Nombre"-->
+        <!--android:inputType="textPersonName" />-->
+
+    <!--<EditText-->
+        <!--android:id="@+id/txtDescription"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignStart="@+id/txtName"-->
+        <!--android:layout_below="@+id/txtName"-->
+        <!--android:layout_marginTop="-207dp"-->
+        <!--android:ems="8"-->
+        <!--android:hint="Descripción"-->
+        <!--android:inputType="textPersonName" />-->
+
+    <!--<EditText-->
+        <!--android:id="@+id/txtQuantity"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:layout_alignTop="@+id/txtName"-->
+        <!--android:layout_marginEnd="11dp"-->
+        <!--android:layout_marginRight="11dp"-->
+        <!--android:ems="8"-->
+        <!--android:hint="Cantidad"-->
+        <!--android:inputType="textPersonName"-->
+        <!--android:text="10" />-->
+
+    <!--<EditText-->
+        <!--android:id="@+id/txtSeries"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignStart="@+id/txtDescription"-->
+        <!--android:layout_below="@+id/txtDescription"-->
+        <!--android:ems="8"-->
+        <!--android:hint="Serie"-->
+        <!--android:inputType="textPersonName" />-->
+
+    <!--<EditText-->
+        <!--android:id="@+id/txtPrice"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:layout_below="@+id/txtName"-->
+        <!--android:layout_marginTop="-207dp"-->
+        <!--android:layout_marginEnd="11dp"-->
+        <!--android:layout_marginRight="11dp"-->
+        <!--android:ems="8"-->
+        <!--android:hint="Precio"-->
+        <!--android:inputType="textPersonName"-->
+        <!--android:text="5" />-->
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:onClick="InsertItem">
+        android:layout_alignParentBottom="true">
 
         <ImageView
             android:id="@+id/createButton2"

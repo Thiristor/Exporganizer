@@ -1,5 +1,6 @@
 package com.main.expo.exporganizer;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -56,6 +58,13 @@ public class CategoryContent extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayaoutManager;
+
+    private boolean itemInserted = false;
+    private boolean isItemSold = false;
+    private boolean isItemDeleted = false;
+    private int itemPosition = 0;
+    static final int ITEM_OPEN = 1;
+    static final int ITEM_NEW = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +116,7 @@ public class CategoryContent extends AppCompatActivity {
 
         mRecyclerView.setHasFixedSize(true);
 
+//        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         mRecyclerView.setLayoutManager(mLayaoutManager);
@@ -132,10 +142,61 @@ public class CategoryContent extends AppCompatActivity {
     }*/
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        System.out.println("SENJUTO - KOKODA: " + resultCode + " " + requestCode);
+        if(resultCode == Activity.RESULT_OK){
+            System.out.println("SENJUTO - RESULT OK");
+            if(requestCode == ITEM_OPEN){
+                isItemSold = data.getExtras().getBoolean("isItemSold");
+                itemPosition = data.getExtras().getInt("itemPosition");
+                isItemDeleted = data.getExtras().getBoolean("isItemDeleted");
+
+            }else if(requestCode == ITEM_NEW){
+                itemInserted = true;
+            }
+        }else{
+            System.out.println("SENJUTO - RESULT NO OK");
+        }
+    }
+
+    @Override
     protected void onResume() {
-        itemList = LoadData();
-        ((ItemsAdapter) mAdapter).SetList(itemList);
-        mAdapter.notifyDataSetChanged();
+        System.out.println("SENJUTO - ON RESUME");
+
+//        ((ItemsAdapter) mAdapter).clear();
+//        itemList = LoadData();
+//        ((ItemsAdapter) mAdapter).SetList(itemList);
+////        mAdapter.notifyDataSetChanged();
+//        mAdapter.notifyItemChanged(0);
+
+        if(itemInserted){
+            System.out.println("SENJUTO - ITEM INSERTED");
+            //((ItemsAdapter) mAdapter).clear();
+            itemList = LoadData();
+            ((ItemsAdapter) mAdapter).SetList(itemList);
+            //TODO PROBLEMA CON LOS COLORES AL NOTIFICAR
+            //mAdapter.notifyDataSetChanged();
+            mAdapter.notifyItemInserted(itemList.size());
+            itemInserted = false;
+        }else if(isItemDeleted){
+            System.out.println("SENJUTO - ITEMDELETED : " + isItemDeleted + "POS: " + itemPosition);
+            itemList = LoadData();
+            ((ItemsAdapter) mAdapter).SetList(itemList);
+            mAdapter.notifyItemRemoved(itemPosition);
+            isItemDeleted = false;
+            isItemSold = false;
+        }else if(isItemSold){
+            System.out.println("SENJUTO - ITEMSOLD : " + isItemSold + "POS: " + itemPosition);
+//            ((ItemsAdapter) mAdapter).clear();
+            itemList = LoadData();
+            ((ItemsAdapter) mAdapter).SetList(itemList);
+//            mAdapter.notifyDataSetChanged();
+            mAdapter.notifyItemChanged(itemPosition);
+            isItemSold = false;
+        }else{
+            System.out.println("SENJUTO - NOTHING");
+        }
+
 
         //TODO Cambiar donde se coloca la posicion tras introducir nueva categoria
         //mLayaoutManager.scrollToPosition(0);
@@ -230,13 +291,15 @@ public class CategoryContent extends AppCompatActivity {
     public void OpenItem(int position){
         Intent intent = new Intent(CategoryContent.this, ItemContent.class);
         intent.putExtra("item", itemList.get(position));
-        startActivity(intent);
+        intent.putExtra("position", position);
+        startActivityForResult(intent, ITEM_OPEN);
     }
 
     public void NewItem(View view){
         Intent intent = new Intent(CategoryContent.this, NewItem.class);
         intent.putExtra("categoryId", String.valueOf(categoria.getId()));
-        startActivity(intent);
+//        startActivity(intent);
+        startActivityForResult(intent, ITEM_NEW);
     }
 
     public List<Item> LoadData(){

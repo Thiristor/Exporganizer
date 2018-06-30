@@ -9,21 +9,25 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.FileProvider;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.main.expo.beans.Categoria;
 import com.main.expo.beans.Item;
+import com.main.expo.utils.Utils;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import cmon.main.expo.db.DBHelper;
@@ -50,6 +54,39 @@ public class NewItem extends Activity {
         setContentView(R.layout.new_item);
 
         imageItem = findViewById(R.id.imageItem);
+
+        Setup();
+    }
+
+    public void Setup(){
+
+            View rootView = findViewById(android.R.id.content);
+
+            final List<TextInputLayout> textInputLayouts = Utils.findViewsWithType(
+                    rootView, TextInputLayout.class);
+
+            ImageView button = findViewById(R.id.createButton2);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    boolean noErrors = true;
+                    for (TextInputLayout textInputLayout : textInputLayouts) {
+                        String editTextString = textInputLayout.getEditText().getText().toString();
+                        if (editTextString.isEmpty()) {
+                            textInputLayout.setError("No puede ser vacio");
+                            noErrors = false;
+                        } else {
+                            textInputLayout.setError(null);
+                        }
+                    }
+
+                    if (noErrors) {
+                        // All fields are valid!
+                        InsertItem();
+                    }
+                }
+            });
+
     }
 
     @Override
@@ -131,16 +168,16 @@ public class NewItem extends Activity {
         return image;
     }
 
-    public void InsertItem(View view){
+    public void InsertItem(){
 
         SQLiteDatabase db = catdbh.getWritableDatabase();
 
         if(db != null) {
-            EditText txtName = (EditText) findViewById(R.id.txtName);
-            EditText txtDescription = (EditText) findViewById(R.id.txtDescription);
-            EditText txtQuantity = (EditText) findViewById(R.id.txtQuantity);
-            EditText txtSeries = (EditText) findViewById(R.id.txtSeries);
-            EditText txtPrice = (EditText) findViewById(R.id.txtPrice);
+            EditText txtName = (EditText) findViewById(R.id.txtName2);
+            EditText txtDescription = (EditText) findViewById(R.id.txtDescription2);
+            EditText txtQuantity = (EditText) findViewById(R.id.txtQuantity2);
+            EditText txtSeries = (EditText) findViewById(R.id.txtSeries2);
+            EditText txtPrice = (EditText) findViewById(R.id.txtPrice2);
 
             ContentValues values = new ContentValues();
             values.put(Item.COLUMN_NAME_TITLE, txtName.getText().toString());
@@ -158,6 +195,7 @@ public class NewItem extends Activity {
             //Cerramos la base de datos
             db.close();
 
+            setResult(Activity.RESULT_OK);
             finish();
         }
     }
