@@ -5,7 +5,13 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -15,7 +21,15 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.main.expo.beans.Item;
+import com.main.expo.utils.DBUtils;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -27,7 +41,7 @@ public class ItemContent extends AppCompatActivity {
 
     private Item item;
     private int position;
-    private DBHelper catdbh;
+    private DBUtils dbUtils;
 
     private ImageView itemImage;
     private TextView itemName;
@@ -45,11 +59,12 @@ public class ItemContent extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_content);
 
-        catdbh =
-                new DBHelper(this, "DBGlobal", null, 1);
+        dbUtils = new DBUtils(this);
 
         item = (Item) getIntent().getParcelableExtra("item");
         position = (int) getIntent().getIntExtra("position", 0);
+
+        GenerateQR(item.getId());
 
         GetViews();
         LoadData();
@@ -113,13 +128,8 @@ public class ItemContent extends AppCompatActivity {
                 .setPositiveButton("Borrar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        SQLiteDatabase db = catdbh.getWritableDatabase();
 
-                        if(db != null) {
-                            String selection = Item.COLUMN_NAME_TITLE + " LIKE ?";
-                            String[] selectionArgs = { item.getName() };
-                            db.delete(Item.TABLE_NAME, selection, selectionArgs);
-                        }
+                        dbUtils.DeleteFromTable(Item.TABLE_NAME, String.valueOf(item.getId()), null);
 
                         isItemDeleted = true;
                         onBackPressed();
@@ -135,25 +145,36 @@ public class ItemContent extends AppCompatActivity {
 
     public void SoldItem(View view){
         if(item.getSold() < item.getQuantity()) {
-            SQLiteDatabase db = catdbh.getReadableDatabase();
-
             item.setSold(item.getSold() + 1);
 
-            ContentValues values = new ContentValues();
-            values.put(Item.COLUMN_NAME_SOLD, item.getSold());
-
-            String selection = Item.COLUMN_NAME_TITLE + " LIKE ?";
-            String[] selectionArgs = {item.getName()};
-
-            int count = db.update(
-                    Item.TABLE_NAME,
-                    values,
-                    selection,
-                    selectionArgs);
+            dbUtils.UpdateSoldItem(String.valueOf(item.getId()), item.getSold());
         }
 
         isItemSold = true;
 
         onResume();
+    }
+
+    private void GenerateQR(int id){
+        MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+        String text = "ITEM:".concat(String.valueOf(id));
+        System.out.println("SENJUTO - QR: " + text);
+
+        try {
+            BitMatrix bitMatrix = multiFormatWriter.encode(text, BarcodeFormat.QR_CODE,200,200);
+            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+            Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
+            ImageView codeImage = findViewById(R.id.qrcode);
+            codeImage.setImageBitmap(bitmap);
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void UndoSold(View view){
+        if(item.getSold() != 0) {
+            item.setSold(item.getSold() - 1);
+            dbUtils.UpdateSoldItem(String.valueOf(item.getId()), item.getSold());
+        }
     }
 }

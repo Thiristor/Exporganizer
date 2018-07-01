@@ -5,6 +5,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
+import android.os.Environment;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +29,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.main.expo.adapter.GridViewAdapter;
 import com.main.expo.adapter.GridViewItemAdapter;
 import com.main.expo.adapter.ItemsAdapter;
@@ -30,16 +42,22 @@ import com.main.expo.adapter.ListViewItemAdapter;
 import com.main.expo.adapter.TestAdapter;
 import com.main.expo.beans.Categoria;
 import com.main.expo.beans.Item;
+import com.main.expo.utils.DBUtils;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.SQLOutput;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import cmon.main.expo.db.DBHelper;
 
 public class CategoryContent extends AppCompatActivity {
 
-    private DBHelper catdbh;
+    private DBUtils dbUtils;
 
     private ViewStub stubGrid;
     private ViewStub stubList;
@@ -71,10 +89,11 @@ public class CategoryContent extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category_content);
 
-        catdbh =
-                new DBHelper(this, "DBGlobal", null, 1);
+        dbUtils = new DBUtils(this);
 
         categoria = (Categoria) getIntent().getParcelableExtra("categoria");
+
+        System.out.println("SENJUTO - CATEGORIA ID: " + categoria.getId());
 
 //        stubList = findViewById(R.id.stub_list2);
 //        stubGrid = findViewById(R.id.stub_grid2);
@@ -110,6 +129,7 @@ public class CategoryContent extends AppCompatActivity {
         mAdapter = new ItemsAdapter(itemList, R.layout.list_item, new ItemsAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Item item, int position, ImageView imageViewName) {
+//                GenerateSheet();
                 OpenItem(position);
             }
         });
@@ -260,22 +280,6 @@ public class CategoryContent extends AppCompatActivity {
         return true;
     }
 
-    private void DeleteCategory() {
-        SQLiteDatabase db = catdbh.getWritableDatabase();
-
-        if(db != null) {
-            String selection = Categoria.COLUMN_NAME_TITLE + " LIKE ?";
-            String[] selectionArgs = { categoria.getName() };
-            db.delete(Categoria.TABLE_NAME, selection, selectionArgs);
-
-            String selection2 = Item.COLUMN_NAME_CATEGORY + " LIKE ?";
-            String[] selectionArgs2 = { categoria.getName() };
-            db.delete(Item.TABLE_NAME, selection2, selectionArgs2);
-        }
-
-        onBackPressed();
-    }
-
     AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -287,6 +291,8 @@ public class CategoryContent extends AppCompatActivity {
             startActivity(intent);
         }
     };
+
+    // ---------------------------------------------------------- Intents Methods
 
     public void OpenItem(int position){
         Intent intent = new Intent(CategoryContent.this, ItemContent.class);
@@ -302,62 +308,84 @@ public class CategoryContent extends AppCompatActivity {
         startActivityForResult(intent, ITEM_NEW);
     }
 
+    // ---------------------------------------------------------- DB Methods
+
     public List<Item> LoadData(){
-
         itemList = new ArrayList<>();
-
-        SQLiteDatabase db = catdbh.getReadableDatabase();
-
-        if (db != null) {
-            String[] projection = {
-                    Item._ID,
-                    Item.COLUMN_NAME_TITLE,
-                    Item.COLUMN_NAME_DESCRIPTION,
-                    Item.COLUMN_NAME_IMAGE,
-                    Item.COLUMN_NAME_QUANTITY,
-                    Item.COLUMN_NAME_SOLD,
-                    Item.COLUMN_NAME_PRICE,
-                    Item.COLUMN_NAME_SERIES,
-                    Item.COLUMN_NAME_CATEGORY
-            };
-
-            String selection = Item.COLUMN_NAME_CATEGORY + " = ?";
-            String[] selectionArgs = { String.valueOf(categoria.getId()) };
-
-            Cursor cursor = db.query(
-                    Item.TABLE_NAME,                     // The table to query
-                    projection,                               // The columns to return
-                    selection,                                // The columns for the WHERE clause
-                    selectionArgs,                            // The values for the WHERE clause
-                    null,                                     // don't group the rows
-                    null,                                     // don't filter by row groups
-                    null                                 // The sort order
-            );
-
-            if (cursor != null) {
-                try{
-                    while(cursor.moveToNext()) {
-
-                        itemList.add(
-                                new Item(cursor.getString(cursor.getColumnIndexOrThrow(Categoria.COLUMN_NAME_IMAGE)),
-                                        cursor.getString(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_TITLE)),
-                                        cursor.getString(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_DESCRIPTION)),
-                                        cursor.getInt(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_QUANTITY)),
-                                        cursor.getInt(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_SOLD)),
-                                        cursor.getFloat(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_PRICE)),
-                                        cursor.getString(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_SERIES)),
-                                        cursor.getString(cursor.getColumnIndexOrThrow(Item.COLUMN_NAME_CATEGORY))));
-                    }
-                } finally {
-                    cursor.close();
-                }
-            }
-            db.close();
-        }
-
-
+        itemList = dbUtils.GetItemsFromCategory(String.valueOf(categoria.getId()));
         return itemList;
     }
 
+    private void DeleteCategory() {
+        dbUtils.DeleteFromTable(Categoria.TABLE_NAME,
+                String.valueOf(categoria.getId()),
+                categoria.getName());
+        onBackPressed();
+    }
 
+    // ---------------------------------------------------------- GenerateSheet
+
+    public void GenerateSheet() {
+        // 72 PPI = 595 x 842 | 300 PP1 = 2480 x 3508
+        int widthA4 = 595 ;
+        int heightA4 = 842;
+        int y = 70;
+        //Create a new image bitmap and attach a brand new canvas to it
+        Bitmap tempBitmap = Bitmap.createBitmap(widthA4 , heightA4, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(tempBitmap);
+        tempBitmap.setHasAlpha(true);
+
+        Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+        canvas.drawRoundRect(new RectF(0,0,widthA4,heightA4), 2, 2, paint);
+
+        for(Item item: itemList){
+            paint.setColor(Color.BLACK);
+            paint.setTextSize(56);
+            canvas.drawText(item.getName(), 20, y, paint);
+            Bitmap tmpBitmap = GenerateQR(item.getId());
+            canvas.drawBitmap(tmpBitmap, 300,y-70, paint);
+
+            y = y + tmpBitmap.getHeight();
+        }
+        File reportFile = null;
+        FileOutputStream os = null;
+        try {
+            reportFile = createImageFile();
+            os = new FileOutputStream(reportFile);
+
+            tempBitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+            os.flush();
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Bitmap GenerateQR(int id){
+        MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+        String text = "ITEM:".concat(String.valueOf(id));
+
+        try {
+            BitMatrix bitMatrix = multiFormatWriter.encode(text, BarcodeFormat.QR_CODE,200,200);
+            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+            Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
+            return bitmap;
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String imageFileName = "INFORME_QR";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".png",         /* suffix */
+                storageDir      /* directory */
+        );
+        return image;
+    }
 }

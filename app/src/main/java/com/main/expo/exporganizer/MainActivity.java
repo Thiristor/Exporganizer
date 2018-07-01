@@ -121,7 +121,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
+    public void ReadQR(View view) {
+        Intent intent = new Intent(this, CaptureActivity.class);
+        startActivity(intent);
+    }
 
     @Override
     protected void onResume() {

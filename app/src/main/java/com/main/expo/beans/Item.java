@@ -27,6 +27,7 @@ public class Item implements BaseColumns, Parcelable {
     public static final String COLUMN_NAME_SERIES = "Serie";
     public static final String COLUMN_NAME_CATEGORY = "Categoria";
 
+    private int id;
     private String imagePath;
     private String name;
     private String description;
@@ -36,7 +37,8 @@ public class Item implements BaseColumns, Parcelable {
     private String series;
     private String category;
 
-    public Item(String imagePath, String name, String description, int quantity, int sold, float price, String series, String category) {
+    public Item(int id, String imagePath, String name, String description, int quantity, int sold, float price, String series, String category) {
+        this.id = id;
         this.imagePath = imagePath;
         this.name = name;
         this.description = description;
@@ -45,6 +47,14 @@ public class Item implements BaseColumns, Parcelable {
         this.price = price;
         this.series = series;
         this.category = category;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getImagePath() {
@@ -118,6 +128,7 @@ public class Item implements BaseColumns, Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int i) {
+        dest.writeInt(id);
         dest.writeString(imagePath);
         dest.writeString(name);
         dest.writeString(description);
@@ -128,6 +139,7 @@ public class Item implements BaseColumns, Parcelable {
         dest.writeString(category);
     }
     public Item(Parcel in) {
+        this.id = in.readInt();
         this.imagePath = in.readString();
         this.name = in.readString();
         this.description = in.readString();

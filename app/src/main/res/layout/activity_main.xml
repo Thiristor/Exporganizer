@@ -102,7 +102,8 @@
             android:clickable="true"
             android:focusable="true"
             android:foreground="?android:attr/selectableItemBackground"
-            android:gravity="center">
+            android:gravity="center"
+            android:onClick="ReadQR">
 
             <ImageView
                 android:layout_width="64dp"

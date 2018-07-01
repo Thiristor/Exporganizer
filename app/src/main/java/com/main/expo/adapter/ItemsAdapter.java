@@ -43,7 +43,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder>{
         public void Bind(final Item item, final ItemsAdapter.OnItemClickListener listener){
             // Procesamos los datos a renderizar
 
-            textViewName.setText(item.getName());
+            textViewName.setText(item.getName().concat(" : " + String.valueOf(item.getId())));
             String total = String.valueOf(item.getSold()*item.getPrice()) + "€";
             txtTotal.setText(total);
 
