@@ -13,15 +13,23 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.os.Parcelable;
+import android.support.design.bottomappbar.BottomAppBar;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -36,9 +44,11 @@ import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.main.expo.adapter.GridViewAdapter;
 import com.main.expo.adapter.GridViewItemAdapter;
+import com.main.expo.adapter.ItemTouchHelperAdapter;
 import com.main.expo.adapter.ItemsAdapter;
 import com.main.expo.adapter.ListViewAdapter;
 import com.main.expo.adapter.ListViewItemAdapter;
+import com.main.expo.adapter.SimpleItemTouchHelperCallback;
 import com.main.expo.adapter.TestAdapter;
 import com.main.expo.beans.Categoria;
 import com.main.expo.beans.Item;
@@ -55,7 +65,7 @@ import java.util.List;
 
 import cmon.main.expo.db.DBHelper;
 
-public class CategoryContent extends AppCompatActivity {
+public class CategoryContent extends Fragment implements SearchView.OnQueryTextListener {
 
     private DBUtils dbUtils;
 
@@ -77,6 +87,8 @@ public class CategoryContent extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayaoutManager;
 
+    View rootView;
+
     private boolean itemInserted = false;
     private boolean isItemSold = false;
     private boolean isItemDeleted = false;
@@ -85,13 +97,15 @@ public class CategoryContent extends AppCompatActivity {
     static final int ITEM_NEW = 2;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_category_content);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        rootView = inflater.inflate(R.layout.activity_category_content, container, false);
 
-        dbUtils = new DBUtils(this);
+        initBottomBar();
 
-        categoria = (Categoria) getIntent().getParcelableExtra("categoria");
+        dbUtils = new DBUtils(getContext());
+
+//        categoria = (Categoria) getActivity().getIntent().getParcelableExtra("categoria");
+        categoria = (Categoria) getArguments().getParcelable("categoria");
 
         System.out.println("SENJUTO - CATEGORIA ID: " + categoria.getId());
 
@@ -110,8 +124,8 @@ public class CategoryContent extends AppCompatActivity {
         LoadData();
 
         //Get current view mode in share references
-        SharedPreferences sharedPreferences = getSharedPreferences("ViewMode", MODE_PRIVATE);
-        currentViewMode = sharedPreferences.getInt("currentViewMode", VIEW_MODE_LISTVIEW); //Default
+//        SharedPreferences sharedPreferences = getSharedPreferences("ViewMode", MODE_PRIVATE);
+//        currentViewMode = sharedPreferences.getInt("currentViewMode", VIEW_MODE_LISTVIEW); //Default
 
         //Register item click
 //        listView.setOnItemClickListener(onItemClickListener);
@@ -119,11 +133,42 @@ public class CategoryContent extends AppCompatActivity {
 
         //SwitchView();
         LoadRecycler();
+
+        //DRAG AND DROP
+        ItemTouchHelper.Callback callback =
+                new SimpleItemTouchHelperCallback((ItemTouchHelperAdapter) mAdapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        //touchHelper.attachToRecyclerView(mRecyclerView);
+
+        return rootView;
+    }
+
+    public void initBottomBar (){
+        BottomAppBar bottomAppBar = rootView.findViewById(R.id.bottom_appbar);
+        FloatingActionButton fab = rootView.findViewById(R.id.fab);
+
+        bottomAppBar.replaceMenu(R.menu.bottom_menu);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (bottomAppBar.getFabAlignmentMode() == BottomAppBar.FAB_ALIGNMENT_MODE_CENTER)
+                    bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_END);
+                else {
+                    bottomAppBar.setFabAlignmentMode(BottomAppBar.FAB_ALIGNMENT_MODE_CENTER);
+                }
+            }
+        });
+
+        Menu menu = bottomAppBar.getMenu();
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(this);
+
     }
 
     public void LoadRecycler() {
-        mRecyclerView = findViewById(R.id.itemrecycler);
-        mLayaoutManager = new LinearLayoutManager(this);
+        mRecyclerView = rootView.findViewById(R.id.itemrecycler);
+        mLayaoutManager = new LinearLayoutManager(getContext());
 
 
         mAdapter = new ItemsAdapter(itemList, R.layout.list_item, new ItemsAdapter.OnItemClickListener() {
@@ -162,7 +207,7 @@ public class CategoryContent extends AppCompatActivity {
     }*/
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         System.out.println("SENJUTO - KOKODA: " + resultCode + " " + requestCode);
         if(resultCode == Activity.RESULT_OK){
             System.out.println("SENJUTO - RESULT OK");
@@ -180,16 +225,16 @@ public class CategoryContent extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        System.out.println("SENJUTO - ON RESUME");
+    public void onResume() {
+        System.out.println("SENJUTO - ON RESUME category");
 
 //        ((ItemsAdapter) mAdapter).clear();
 //        itemList = LoadData();
 //        ((ItemsAdapter) mAdapter).SetList(itemList);
 ////        mAdapter.notifyDataSetChanged();
 //        mAdapter.notifyItemChanged(0);
-
-        if(itemInserted){
+        itemList = LoadData();
+        /*if(itemInserted){
             System.out.println("SENJUTO - ITEM INSERTED");
             //((ItemsAdapter) mAdapter).clear();
             itemList = LoadData();
@@ -215,7 +260,7 @@ public class CategoryContent extends AppCompatActivity {
             isItemSold = false;
         }else{
             System.out.println("SENJUTO - NOTHING");
-        }
+        }*/
 
 
         //TODO Cambiar donde se coloca la posicion tras introducir nueva categoria
@@ -241,44 +286,44 @@ public class CategoryContent extends AppCompatActivity {
     private void SetAdapters() {
 
         if(VIEW_MODE_LISTVIEW == currentViewMode){
-            listViewAdapter = new ListViewItemAdapter(this, R.layout.list_item, itemList);
+            listViewAdapter = new ListViewItemAdapter(getContext(), R.layout.list_item, itemList);
             listView.setAdapter(listViewAdapter);
         }else{
-            gridViewAdapter = new GridViewItemAdapter(this, R.layout.grid_item, itemList);
+            gridViewAdapter = new GridViewItemAdapter(getContext(), R.layout.grid_item, itemList);
             gridView.setAdapter(gridViewAdapter);
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu){
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        return super.onCreateOptionsMenu(menu);
+//    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()){
-            case R.id.item_menu_1:
-                if(VIEW_MODE_LISTVIEW == currentViewMode){
-                    currentViewMode = VIEW_MODE_GRIDVIEW;
-                }else{
-                    currentViewMode = VIEW_MODE_LISTVIEW;
-                }
-                SwitchView();
-                //save mode in sharedpreferences
-                SharedPreferences sharedPreferences = getSharedPreferences("ViewMode", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt("currentViewMode", currentViewMode);
-                editor.commit();
-
-                break;
-
-            case R.id.item_menu_2:
-                DeleteCategory();
-                break;
-        }
-        return true;
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item){
+//        switch (item.getItemId()){
+//            case R.id.item_menu_1:
+//                if(VIEW_MODE_LISTVIEW == currentViewMode){
+//                    currentViewMode = VIEW_MODE_GRIDVIEW;
+//                }else{
+//                    currentViewMode = VIEW_MODE_LISTVIEW;
+//                }
+//                SwitchView();
+//                //save mode in sharedpreferences
+//                SharedPreferences sharedPreferences = getSharedPreferences("ViewMode", MODE_PRIVATE);
+//                SharedPreferences.Editor editor = sharedPreferences.edit();
+//                editor.putInt("currentViewMode", currentViewMode);
+//                editor.commit();
+//
+//                break;
+//
+//            case R.id.item_menu_2:
+//                DeleteCategory();
+//                break;
+//        }
+//        return true;
+//    }
 
     AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
@@ -286,7 +331,7 @@ public class CategoryContent extends AppCompatActivity {
             //Do anything when user click to item
             //Toast.makeText(getApplicationContext(), categoryList.get(position).getName(), Toast.LENGTH_SHORT ).show();
 
-            Intent intent = new Intent(CategoryContent.this, ItemContent.class);
+            Intent intent = new Intent(getContext(), ItemContent.class);
             intent.putExtra("item", itemList.get(position));
             startActivity(intent);
         }
@@ -295,14 +340,14 @@ public class CategoryContent extends AppCompatActivity {
     // ---------------------------------------------------------- Intents Methods
 
     public void OpenItem(int position){
-        Intent intent = new Intent(CategoryContent.this, ItemContent.class);
+        Intent intent = new Intent(getContext(), ItemContent.class);
         intent.putExtra("item", itemList.get(position));
         intent.putExtra("position", position);
         startActivityForResult(intent, ITEM_OPEN);
     }
 
     public void NewItem(View view){
-        Intent intent = new Intent(CategoryContent.this, NewItem.class);
+        Intent intent = new Intent(getContext(), NewItem.class);
         intent.putExtra("categoryId", String.valueOf(categoria.getId()));
 //        startActivity(intent);
         startActivityForResult(intent, ITEM_NEW);
@@ -311,6 +356,7 @@ public class CategoryContent extends AppCompatActivity {
     // ---------------------------------------------------------- DB Methods
 
     public List<Item> LoadData(){
+        System.out.println("SENJUTO - Loading Category data");
         itemList = new ArrayList<>();
         itemList = dbUtils.GetItemsFromCategory(String.valueOf(categoria.getId()));
         return itemList;
@@ -320,7 +366,7 @@ public class CategoryContent extends AppCompatActivity {
         dbUtils.DeleteFromTable(Categoria.TABLE_NAME,
                 String.valueOf(categoria.getId()),
                 categoria.getName());
-        onBackPressed();
+        getActivity().onBackPressed();
     }
 
     // ---------------------------------------------------------- GenerateSheet
@@ -380,12 +426,39 @@ public class CategoryContent extends AppCompatActivity {
     private File createImageFile() throws IOException {
         // Create an image file name
         String imageFileName = "INFORME_QR";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".png",         /* suffix */
                 storageDir      /* directory */
         );
         return image;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        final List<Item> filteredModelList = filter(itemList, query);
+        ((ItemsAdapter) mAdapter).replaceAll(filteredModelList);
+        mRecyclerView.scrollToPosition(0);
+        return true;
+    }
+
+    private static List<Item> filter(List<Item> models, String query) {
+        final String lowerCaseQuery = query.toLowerCase();
+
+        final List<Item> filteredModelList = new ArrayList<>();
+        for (Item model : models) {
+            final String text = model.getName().toLowerCase();
+            if (text.contains(lowerCaseQuery)) {
+                filteredModelList.add(model);
+            }
+        }
+
+        return filteredModelList;
     }
 }
